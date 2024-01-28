@@ -110,3 +110,14 @@ sequelize.sync()
   .catch(error => {
     console.error('Error synchronizing database:', error);
   });
+
+/*******/
+User.bulkCreate([
+  { username: 'barfooz', isAdmin: true },
+  { username: 'foo', isAdmin: true },
+  { username: 'bar', isAdmin: false }
+]).then(() => { // Notice: There are no arguments here, as of right now you'll have to...
+  return User.findAll();
+}).then(users => {
+  console.log(users) // ... in order to get the array of user objects
+})
