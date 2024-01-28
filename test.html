@@ -1,0 +1,40 @@
+<script>
+    $(document).ready(function () {
+      // Add input field
+      $("#addField").on("click", function () {
+        var newInput = '<div class="input-group mb-3"> <input type="text" class="form-control" name="name[]" placeholder="Enter Name">' +
+          '<input type="text" class="form-control" name="email[]" placeholder="Enter Email">' +
+          '<input type="text" class="form-control" name="address[]" placeholder="Enter Address"><div class="input-group-append"><button class="btn btn-outline-danger removeField" type="button">Remove</button></div></div>';
+        $("#inputContainer").append(newInput);
+      });
+  
+      // Remove input field
+      $("#inputContainer").on("click", ".removeField", function () {
+        $(this).closest('.input-group').remove();
+      });
+  
+      // Insert data API call
+      $("#submitData").on("click", function () {
+        var entries = [];
+        $(".input-group").each(function () {
+          var name = $(this).find('input[name="name[]"]').val();
+          var email = $(this).find('input[name="email[]"]').val();
+          var address = $(this).find('input[name="address[]"]').val();
+          entries.push({ name, email, address });
+        });
+  
+        $.ajax({
+          type: "POST",
+          url: "/api/insert",
+          contentType: "application/json",
+          data: JSON.stringify(entries),
+          success: function (response) {
+            console.log(response);
+          },
+          error: function (error) {
+            console.error(error);
+          }
+        });
+      });
+    });
+  </script>

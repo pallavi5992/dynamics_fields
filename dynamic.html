@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamically Add/Remove Input Fields with Bootstrap</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+
+  <div class="container mt-5">
+    <div id="inputContainer">
+      <!-- Initial four input fields -->
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" name="name[]" placeholder="Enter Name">
+          <input type="text" class="form-control" name="email[]" placeholder="Enter email">
+          <input type="text" class="form-control" name="address[]" placeholder="Enter address">
+        <div class="input-group-append">
+          <button class="btn btn-outline-danger removeField" type="button">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <button id="addField" class="btn btn-success">Add Input Field</button>
+  </div>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+  $(document).ready(function () {
+    // Add input field
+    $("#addField").on("click", function () {
+      var newInput = '<div class="input-group mb-3"> <input type="text" class="form-control" name="name[]" placeholder="Enter Name">' +
+        '<input type="text" class="form-control" name="email[]" placeholder="Enter Email">' +
+        '<input type="text" class="form-control" name="address[]" placeholder="Enter Address"><div class="input-group-append"><button class="btn btn-outline-danger removeField" type="button">Remove</button></div></div>';
+      $("#inputContainer").append(newInput);
+    });
+
+    // Remove input field
+    $("#inputContainer").on("click", ".removeField", function () {
+      $(this).closest('.input-group').remove();
+    });
+
+
+    function remove(){
+  var input_tags = formfield.getElementsByTagName('input');
+  if(input_tags.length > 2) {
+    formfield.removeChild(input_tags[(input_tags.length) - 1]);
+  }
+}
+
+    // Insert data API call
+    $("#submitData").on("click", function () {
+      var entries = [];
+      $(".input-group").each(function () {
+        var name = $(this).find('input[name="name[]"]').val();
+        var email = $(this).find('input[name="email[]"]').val();
+        var address = $(this).find('input[name="address[]"]').val();
+        entries.push({ name, email, address });
+      });
+
+      $.ajax({
+        type: "POST",
+        url: "/api/insert",
+        contentType: "application/json",
+        data: JSON.stringify(entries),
+        success: function (response) {
+          console.log(response);
+        },
+        error: function (error) {
+          console.error(error);
+        }
+      });
+    });
+  });
+
+  </script>
+
+</body>
+</html>
