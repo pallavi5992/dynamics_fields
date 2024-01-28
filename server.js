@@ -50,3 +50,63 @@ app.post('/api/insert', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+/*****   squelize ******/
+const express = require('express');
+const bodyParser = require('body-parser');
+const { Sequelize, DataTypes } = require('sequelize');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Create Sequelize instance
+const sequelize = new Sequelize('your_database_name', 'your_username', 'your_password', {
+  host: 'localhost',
+  dialect: 'mysql'
+});
+
+// Define model
+const Entry = sequelize.define('Entry', {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+});
+
+// Middleware to parse JSON
+app.use(bodyParser.json());
+
+// Route to insert data
+app.post('/api/insert', async (req, res) => {
+  try {
+    const entries = req.body;
+
+    // Insert entries
+    await Entry.bulkCreate(entries);
+
+    console.log('Entries inserted successfully');
+    res.status(201).json({ message: 'Entries inserted successfully' });
+  } catch (error) {
+    console.error('Error inserting data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Sync Sequelize models with the database
+sequelize.sync()
+  .then(() => {
+    console.log('Database synchronized');
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch(error => {
+    console.error('Error synchronizing database:', error);
+  });
