@@ -121,3 +121,41 @@ User.bulkCreate([
 }).then(users => {
   console.log(users) // ... in order to get the array of user objects
 })
+
+/***BulkCreate ignore duplicate values for custom fields*/
+
+You can define your own "unique" index (could be even composite) on the Model level and that will be used to check the uniqueness.
+
+const database = require('../../shared/database'); // shared db connection. This works
+const {DataTypes, Model} = require('sequelize');
+
+class Topic extends Model { }
+
+Topic.init({
+  topicId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    defaultValue: undefined,
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  count: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+}, {
+  sequelize: database, 
+  indexes: [{
+             unique: true,
+             fields: ['title'] // you can use multiple columns as well here
+           }]
+});
+
+module.exports = Topic;
+And now when you run this command, it will not create any duplicates and simply ignore them.
+
+await Topic.bulkCreate(topics, {ignoreDuplicates: true);
+
